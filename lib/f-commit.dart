@@ -34,16 +34,29 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     // Hedef an
     DateTime targetDate = DateTime(2024, 12, 31, 23); // yıl ay gün saat :D
-
     ////Tekrar dedin sayaç(zamana bağlı işlemler için)
-
-    /// Initialize the PageController
+    // Timer.periodic(Duration(seconds: 1), (timer) {
+    //   setState(() {
+    //     int nextPage = (controller.page?.round() ?? 0) + 1;
+    //     if (nextPage > 4) {
+    //       nextPage = 0;
+    //     }
+    //     if (sayac == 8) {
+    //       controller.animateToPage(nextPage,
+    //           duration: Duration(microseconds: 500), curve: Curves.ease);
+    //       sayac = 0;
+    //     }
+    //     sayac++;
+    //     _timeUntilTarget = targetDate.difference(DateTime.now());
+    //   });
+    // });
+    //Hedef ana kalan sürenin hesaplandığı yer
+    _timeUntilTarget = targetDate.difference(DateTime.now());
+    // Initialize the PageController
     controller = PageController(initialPage: 0);
 
-    //Hedef ana kalan sürenin hesaplandığı yer
-
     // Automatic banner change timer
-    Timer.periodic(const Duration(seconds: 1), (timer) {
+    Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
         int nextPage = (controller.page?.round() ?? 0) + 1;
         if (nextPage > 4) {
@@ -56,18 +69,15 @@ class _MyAppState extends State<MyApp> {
         }
         sayac++;
       });
-      sayac++;
-      _timeUntilTarget = targetDate.difference(DateTime.now());
     });
-    _timeUntilTarget = targetDate.difference(
-        DateTime.now()); // bunu silince çalışmıyor ilginç bir şekilde
+
     // Page change listener
     controller.addListener(() {
       setState(() {
         currentPage = controller.page?.round() ?? 0;
         switch (currentPage) {
           case 0:
-            dot1 = const Color.fromRGBO(29, 78, 216, 1);
+            dot1 = Color.fromRGBO(29, 78, 216, 1);
             dot2 = Colors.grey;
             dot3 = Colors.grey;
             dot4 = Colors.grey;
@@ -160,8 +170,8 @@ class _MyAppState extends State<MyApp> {
                 ),
               ),
               const SizedBox(height: 8),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -305,7 +315,7 @@ class _MyAppState extends State<MyApp> {
               ),
               const SizedBox(), // unutma ismiini
               Container(
-                height: 560,
+                height: 436,
                 width: double.infinity,
                 color: Color.fromRGBO(246, 246, 246, 1),
                 child: Padding(
@@ -366,39 +376,16 @@ class _MyAppState extends State<MyApp> {
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Container(
-                              height: 35,
-                              width: 160,
+                              height: 30,
+                              width: 150,
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(5),
                                 color: Color.fromARGB(255, 239, 68, 68),
                               ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  "${_timeUntilTarget.inDays} D ${_timeUntilTarget.inHours % 24} H ${_timeUntilTarget.inMinutes % 60} M ${_timeUntilTarget.inSeconds % 60} S",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Color.fromARGB(255, 255, 255, 255),
-                                  ),
-                                ),
-                              ),
                             ),
                           )
                         ],
-                      ),
-                      Column(children: [
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Container(
-                            height: 436,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              color: Colors.white,
-                            ),
-                          ),
-                        )
-                      ])
+                      )
                     ],
                   ),
                 ),
