@@ -18,7 +18,10 @@ class _MyAppState extends State<MyApp> {
   int currentPage = 0;
   //Kalan süre değişkeni
   late Duration _timeUntilTarget;
-
+  //BottomAppBar
+  int _currentIndex = 0;
+  // bottombar sayfa değiştirme
+  // final List<Widget> // sayfaları ayırmayı öğren kodları böyle yazılmıyor heralde
   // Slider dot colors
   late Color dot1 = Color.fromRGBO(29, 78, 216, 1);
   late Color dot2 = Colors.grey;
@@ -109,6 +112,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      // theme: ThemeData(useMaterial3: true), // çözemedim ne olduunu tam olarak
       debugShowCheckedModeBanner: isDebug,
       home: Scaffold(
         appBar: AppBar(
@@ -117,20 +121,23 @@ class _MyAppState extends State<MyApp> {
           actions: [
             IconButton(
               onPressed: () {},
-              icon: const Icon(Icons.notifications),
+              icon: const Icon(Icons.notifications_none_outlined),
               iconSize: 24,
             ),
-            IconButton(
-              onPressed: () {},
-              icon: ColorFiltered(
-                colorFilter: const ColorFilter.mode(
-                  Colors.black,
-                  BlendMode.srcIn,
-                ),
-                child: Image.asset(
-                  "assets/bag-2.png",
-                  width: 24,
-                  height: 24,
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: IconButton(
+                onPressed: () {},
+                icon: ColorFiltered(
+                  colorFilter: const ColorFilter.mode(
+                    Colors.black,
+                    BlendMode.srcIn,
+                  ),
+                  child: Image.asset(
+                    "assets/bag-2.png",
+                    width: 24,
+                    height: 24,
+                  ),
                 ),
               ),
             ),
@@ -402,11 +409,167 @@ class _MyAppState extends State<MyApp> {
                     ],
                   ),
                 ),
-              )
+              ),
+              const SizedBox(
+                height: 24,
+              ),
+              Container(
+                height: 480,
+                width: double.infinity,
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text(
+                            "Hot selling footwear",
+                            style: TextStyle(
+                              // style bu abi type değil unutma
+                              color: Color.fromRGBO(31, 41, 55, 1),
+                              fontSize: 14,
+                              fontFamily: "Inter",
+                              fontWeight: FontWeight.w600,
+                              height: 0.11,
+                              letterSpacing: 0.07,
+                            ),
+                          ),
+                        ),
+                        Spacer(),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            "View all ->",
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                              color: Color(0xFF6B7280),
+                              fontSize: 12,
+                              fontFamily: 'Inter',
+                              fontWeight: FontWeight.w400,
+                              height: 0.12,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        //   children: [ // burasını daha sonra kullanırsın doğru yapacağın zaman
+                        //   Column(
+                        //     children: [],
+                        //   )
+                        // ],
+
+                        children: [
+                          for (int i = 0; i < 8; i++)
+                            ImageIcon(
+                              AssetImage(
+                                  "assets/footwear.png"), //böyle bir kullanımı daha önce yapmamıştık
+                              size: 200,
+                              color: Colors.transparent,
+                            ),
+                        ],
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text(
+                            "Recomended for you",
+                            style: TextStyle(
+                              color: Color.fromRGBO(31, 41, 55, 1),
+                              fontSize: 14,
+                              fontFamily: "Inter",
+                              fontWeight: FontWeight.w600,
+                              height: 0.11,
+                              letterSpacing: 0.07,
+                            ),
+                          ),
+                        ),
+                        Spacer(),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            "View all ->",
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                              color: Color(0xFF6B7280),
+                              fontSize: 12,
+                              fontFamily: 'Inter',
+                              fontWeight: FontWeight.w400,
+                              height: 0.12,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        // şurda row açmayı nasıl unuttun :+
+
+                        children: [
+                          for (int i = 0; i < 8; i++) // :d
+                            ImageIcon(
+                              AssetImage(
+                                ("assets/recomended.png"),
+                              ),
+                              size: 200,
+                              color: Colors
+                                  .transparent, // BURASI ÖNEMLİ TRANSPARAN YAPMAZSAN TAKLAYA GELİRSİN
+                            )
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
             ],
           ),
         ),
         drawer: const Drawer(),
+        bottomNavigationBar: BottomNavigationBar(
+          // backgroundColor: Colors.white,
+          type: BottomNavigationBarType.fixed,
+          // fixedColor: Colors.white,
+          currentIndex: _currentIndex,
+          iconSize: 24,
+          selectedFontSize: 10,
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home_outlined),
+              label: "Home",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons
+                  .category_outlined), // icon: Icon(Icons. içerdekinde s var unutma bunları
+              label: "Categorys",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.shopping_cart_outlined),
+              label: "Orders",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_2_outlined),
+              label: "Profile",
+            ),
+          ],
+          backgroundColor: Colors.white,
+          selectedItemColor: Color.fromARGB(255, 78, 65, 65),
+          unselectedItemColor: Color.fromARGB(255, 175, 175, 175),
+          showSelectedLabels: true,
+          showUnselectedLabels:
+              true, // sadece seçilen ögenin ismi gözükmeyecek hepsi gözükecek
+
+          onTap: (index) {
+            // Seçili öge değiştiğinde burada bir işlem yapabilirsiniz.
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+        ),
       ),
     );
   }
