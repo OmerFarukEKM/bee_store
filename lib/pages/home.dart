@@ -1,3 +1,7 @@
+import 'package:bee_store/widgets/category_widgets.dart';
+import 'package:bee_store/widgets/home_widgets.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -104,6 +108,7 @@ class _UserHomeState extends State<UserHome> {
 
   @override
   Widget build(BuildContext context) {
+    // stateless ile statefull farkını bu ikisi ortaya çıkarıyor
     return MaterialApp(
       // theme: ThemeData(useMaterial3: true), // çözemedim ne olduunu tam olarak
 
@@ -167,23 +172,54 @@ class _UserHomeState extends State<UserHome> {
                 padding: const EdgeInsets.all(16.0),
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
+
                   child: Row(
                     children: [
-                      for (int i = 0; i < 3; i++)
-                        Row(
-                          children: [
-                            _buildCategoryButton("assets/dress.png", "Fashion"),
-                            _buildCategoryButton(
-                                "assets/electronic.png", "Electronic"),
-                            _buildCategoryButton(
-                                "assets/appliances.png", "Appliances"),
-                            _buildCategoryButton("assets/beauty.png", "Beauty"),
-                            _buildCategoryButton(
-                                "assets/furniture_3.png", "Furniture"),
-                          ],
-                        ),
+                      for (int i = 0; i < 4; i++)
+                        FutureBuilder(
+                            future: FirebaseFirestore.instance
+                                .collection("categories")
+                                .get(),
+                            builder: (_, snapshot) {
+                              if (snapshot.hasData) {
+                                final categoryList = snapshot.data!.docs
+                                    .map((e) => e.data())
+                                    .toList();
+
+                                return Row(
+                                  children: [
+                                    for (final data in categoryList)
+                                      // future builder olunca bi build fonksiyonu yazıyorsun bi future fonksiyonu yazıyorssun future fonksiyonunde bir eşyi bekletebiliyorsun duration 3 minute dedin mesele o şey 3 dk sonra gerçekleşecek
+                                      CategoryWidget(
+                                          imageAddress: data["imageUrl"],
+                                          caption: data["name"]),
+                                  ],
+                                );
+                              } else {
+                                return Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              }
+                            }),
                     ],
                   ),
+                  //  child: Row(
+                  //   children: [
+                  //     for (int i = 0; i < 3; i++)
+                  //       Row(
+                  //         children: [
+                  //           _buildCategoryButton("assets/dress.png", "Fashion"),
+                  //           _buildCategoryButton(
+                  //               "assets/electronic.png", "Electronic"),
+                  //           _buildCategoryButton(
+                  //               "assets/appliances.png", "Appliances"),
+                  //           _buildCategoryButton("assets/beauty.png", "Beauty"),
+                  //           _buildCategoryButton(
+                  //               "assets/furniture_3.png", "Furniture"),
+                  //         ],
+                  //       ),
+                  //   ],
+                  // ),
                 ),
               ),
               const SizedBox(height: 12),
@@ -278,7 +314,7 @@ class _UserHomeState extends State<UserHome> {
               ),
               const SizedBox(), // unutma ismiini
               Container(
-                height: 560,
+                height: 650,
                 width: double.infinity,
                 color: Color.fromRGBO(246, 246, 246, 1),
                 child: Padding(
@@ -359,19 +395,59 @@ class _UserHomeState extends State<UserHome> {
                           )
                         ],
                       ),
-                      Column(children: [
-                        Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Container(
-                            height: 436,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              color: Colors.white,
+                      Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Container(
+                              height: 525,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(5),
+                                color: Colors
+                                    .white, // bu ikonların oraya kadar gelsin kalan yer krem olsun bi ara yap bunu
+                              ),
+                              child: SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        DealOfYearWidget(
+                                          imageAddress:
+                                              "assets/snacker_deal.png",
+                                          productTitle: "Running Shoes",
+                                          discount: 40,
+                                        ),
+                                        DealOfYearWidget(
+                                          discount: 60,
+                                          productTitle: "Wrist Watches",
+                                          imageAddress: "assets/watch.png",
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        DealOfYearWidget(
+                                          imageAddress:
+                                              "assets/snacker_deal.png",
+                                          productTitle: "Running Shoes",
+                                          discount: 40,
+                                        ),
+                                        DealOfYearWidget(
+                                          discount: 60,
+                                          productTitle: "Wrist Watches",
+                                          imageAddress: "assets/watch.png",
+                                        ),
+                                      ],
+                                    ),
+                                  ], // <-- Add a comma here
+                                ),
+                              ),
                             ),
                           ),
-                        )
-                      ])
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -380,7 +456,7 @@ class _UserHomeState extends State<UserHome> {
                 height: 24,
               ),
               Container(
-                height: 480,
+                height: 880,
                 width: double.infinity,
                 child: Column(
                   children: [
@@ -429,12 +505,22 @@ class _UserHomeState extends State<UserHome> {
 
                         children: [
                           for (int i = 0; i < 8; i++)
-                            ImageIcon(
-                              AssetImage(
-                                  "assets/footwear.png"), //böyle bir kullanımı daha önce yapmamıştık
-                              size: 200,
-                              color: Colors.transparent,
-                            ),
+                            // ImageIcon(
+                            //   AssetImage(
+                            //       "assets/footwear.png"), //böyle bir kullanımı daha önce yapmamıştık
+                            //   size: 200,
+                            //   color: Colors.transparent,
+                            // ),
+                            Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0),
+                                child: HomeWidgets(
+                                  imageAddress: ("assets/abibas.png"),
+                                  titleSnackers:
+                                      "Adidas white snackers for man",
+                                  usdPrice: 66.5,
+                                  discount: 50,
+                                ))
                         ],
                       ),
                     ),
@@ -478,14 +564,14 @@ class _UserHomeState extends State<UserHome> {
 
                         children: [
                           for (int i = 0; i < 8; i++) // :d
-                            ImageIcon(
-                              AssetImage(
-                                ("assets/recomended.png"),
-                              ),
-                              size: 200,
-                              color: Colors
-                                  .transparent, // BURASI ÖNEMLİ TRANSPARAN YAPMAZSAN TAKLAYA GELİRSİN
-                            )
+                            Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0),
+                                child: HomeWidgets(
+                                    titleSnackers: "Nike kadın spor ayakkabı",
+                                    discount: 10,
+                                    imageAddress: "assets/nike.png",
+                                    usdPrice: 68))
                         ],
                       ),
                     )
@@ -500,43 +586,43 @@ class _UserHomeState extends State<UserHome> {
     );
   }
 
-  Widget _buildCategoryButton(String imagePath, String label) {
-    return Row(
-      children: [
-        _buildSingleCategoryButton(imagePath, label),
-        const SizedBox(width: 8),
-      ],
-    );
-  }
+  // Widget _buildCategoryButton(String imagePath, String label) {
+  //   return Row(
+  //     children: [
+  //       _buildSingleCategoryButton(imagePath, label),
+  //       const SizedBox(width: 8),
+  //     ],
+  //   );
+  // }
 
-  Widget _buildSingleCategoryButton(String imagePath, String label) {
-    return Column(
-      children: [
-        IconButton(
-          icon: Image.asset(
-            imagePath,
-            width: 48,
-            height: 48,
-          ),
-          onPressed: () {},
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Color(0xFF1F2937),
-              fontSize: 12,
-              fontFamily: 'Inter',
-              fontWeight: FontWeight.w400,
-              height: 0.12,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+  // Widget _buildSingleCategoryButton(String imagePath, String label) {
+  //   return Column(
+  //     children: [
+  //       IconButton(
+  //         icon: Image.asset(
+  //           imagePath,
+  //           width: 48,
+  //           height: 48,
+  //         ),
+  //         onPressed: () {},
+  //       ),
+  //       Padding(
+  //         padding: const EdgeInsets.all(8.0),
+  //         child: Text(
+  //           label,
+  //           textAlign: TextAlign.center,
+  //           style: TextStyle(
+  //             color: Color(0xFF1F2937),
+  //             fontSize: 12,
+  //             fontFamily: 'Inter',
+  //             fontWeight: FontWeight.w400,
+  //             height: 0.12,
+  //           ),
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   // Data types and variables
   String selamlamaMetini = "Merhaba Arkadaşlar";

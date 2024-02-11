@@ -1,13 +1,23 @@
+import 'package:bee_store/firebase_options.dart';
 import 'package:bee_store/pages/categorys.dart';
 import 'package:bee_store/pages/home.dart';
 import 'package:bee_store/pages/order.dart';
 import 'package:bee_store/pages/profile.dart';
+import 'package:firebase_core/firebase_core.dart'; // 4. videoda bunlar anlatıldı
 import 'package:flutter/material.dart';
-import 'dart:async'; // Add this import for Timer
 
-void main() {
+Future<void> main() async {
   print("Hello World");
   islem(selamlamaMetini, sayi);
+  WidgetsFlutterBinding
+      .ensureInitialized(); // herşeyin düzgün olduğundan emin ol anlamına geliyor
+  try {
+    await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform);
+    // bunu kullanabilmek için feture kısmını ekledik ve async yaptık // current platform hangi platforma çağrılırsa onun ayarlarını getir burdan fairbase bizim kim olduğumuzu bilir
+  } catch (error) {
+    print(error);
+  }
   runApp(MyApp());
 }
 
@@ -36,6 +46,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
+    // ne işe yaradığını bilmiyorum
     super.initState();
   }
 
@@ -113,54 +124,6 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
-
-  // Widget _buildCategoryButton(String imagePath, String label) {
-  //   return Row(
-  //     children: [
-  //       _buildSingleCategoryButton(imagePath, label),
-  //       const SizedBox(width: 8),
-  //     ],
-  //   );
-  // }
-
-  // Widget _buildSingleCategoryButton(String imagePath, String label) {
-  //   return Column(
-  //     children: [
-  //       IconButton(
-  //         icon: Image.asset(
-  //           imagePath,
-  //           width: 48,
-  //           height: 48,
-  //         ),
-  //         onPressed: () {},
-  //       ),
-  //       Padding(
-  //         padding: const EdgeInsets.all(8.0),
-  //         child: Text(
-  //           label,
-  //           textAlign: TextAlign.center,
-  //           style: TextStyle(
-  //             color: Color(0xFF1F2937),
-  //             fontSize: 12,
-  //             fontFamily: 'Inter',
-  //             fontWeight: FontWeight.w400,
-  //             height: 0.12,
-  //           ),
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
-
-  // Data types and variables
-  String selamlamaMetini = "Merhaba Arkadaşlar";
-  int sayi = 5;
-
-  // Timer for automatic banner change
-  late Timer bannerTimer;
-
-  // Target date for the countdown
-  late DateTime targetDate;
 
   void islem(String metin, int sayi) {
     for (int i = 0; i < sayi; i++) {
