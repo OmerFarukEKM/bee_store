@@ -36,6 +36,11 @@ dependencies:
   cupertino_icons: ^1.0.2
   cloud_firestore: ^4.15.4
   firebase_core: ^2.25.4
+  flutter_native_splash: ^2.3.10
+
+flutter_native_splash:
+  color: "#252c8e"
+  image: "assets/giris_icon.png"
 
 dev_dependencies:
   flutter_test:
