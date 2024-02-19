@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:bee_store/pages/inspect_screen.dart';
 
 // flutter eğitim 3. video
 class HomeWidgets extends StatefulWidget {
@@ -32,87 +33,107 @@ class _HomeWidgetsState extends State<HomeWidgets> {
   Widget build(BuildContext context) {
     return Card(
       elevation: 0,
-      child: Container(
-        width: 148,
-        height: 165,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(8),
-          boxShadow: [
-            BoxShadow(
-              color: const Color.fromARGB(255, 255, 255, 255),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: Offset(0, 3),
+      child: InkWell(
+        onTap: () {
+          // Burada tıklanınca yönlendirme yapabilirsiniz.
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => InspectScreen(
+                heroTag:
+                    widget.titleSnackers, // Her resmin eşsiz bir etiketi olmalı
+                imageAddress: widget.imageAddress,
+                usdPrice: widget.usdPrice,
+              ),
             ),
-          ],
-        ),
+          );
+        },
+        child: Hero(
+          tag: widget
+              .titleSnackers, // burda resminin olsı daha mantıklı olmaz mı ?
+          child: Container(
+            width: 148,
+            height: 165,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color.fromARGB(255, 255, 255, 255),
+                  spreadRadius: 2,
+                  blurRadius: 5,
+                  offset: Offset(0, 3),
+                ),
+              ],
+            ),
 
-        // kenarı ovel ve aşşağıya gölge bırakıyor bilmek laızm böyle şeyleri
-        child: Column(
-          children: [
-            Stack(
+            // kenarı ovel ve aşşağıya gölge bırakıyor bilmek laızm böyle şeyleri
+            child: Column(
               children: [
-                Image.asset(
-                  widget.imageAddress,
-                  // width: double.infinity,
-                  // fit: BoxFit.fill,
-                ),
-                Positioned(
-                  // Positioned.fill(
-                  right: 0,
-                  top: 0,
-                  child: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        isFavorite = !isFavorite;
-                      });
-                    },
-                    icon: Icon(
-                      isFavorite // çok ilginçmiş öğren burayı
-                          ? Icons.favorite
-                          : Icons.favorite_border_outlined,
-                      color: isFavorite ? Colors.red : null,
+                Stack(
+                  children: [
+                    Image.asset(
+                      widget.imageAddress,
+                      // width: double.infinity,
+                      // fit: BoxFit.fill,
                     ),
-                  ),
-                )
+                    Positioned(
+                      // Positioned.fill(
+                      right: 0,
+                      top: 0,
+                      child: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            isFavorite = !isFavorite;
+                          });
+                        },
+                        icon: Icon(
+                          isFavorite // çok ilginçmiş öğren burayı
+                              ? Icons.favorite
+                              : Icons.favorite_border_outlined,
+                          color: isFavorite ? Colors.red : null,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                Text(widget.titleSnackers),
+                Row(
+                  children: [
+                    Text(
+                      "\$${widget.usdPrice}  ",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                      /*
+              w100: Çok ince yazı tipi.
+              w200: İnce yazı tipi.
+              w300: Hafif yazı tipi.
+              w400: Normal (normal) yazı tipi. Bu genellikle kullanılan varsayılan değerdir.
+              w500: Orta kalınlıkta (medium) yazı tipi.
+              w600: Kalın yazı tipi.
+              w700: Çok kalın yazı tipi. bold buraya giriyor heralde
+              w800: Ağır yazı tipi.
+              w900: Çok ağır yazı tipi.
+                    */
+                    ),
+                    Text(
+                      "\$136 ",
+                      style: TextStyle(
+                          decoration: TextDecoration.lineThrough,
+                          fontWeight: FontWeight.w200,
+                          fontSize: 12,
+                          color: Colors.grey[400]),
+                    ),
+                    Text(
+                      "${widget.discount}% OFF",
+                      style: TextStyle(
+                        color: Colors.red,
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
-            Text(widget.titleSnackers),
-            Row(
-              children: [
-                Text(
-                  "\$${widget.usdPrice}  ",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                  /*
-w100: Çok ince yazı tipi.
-w200: İnce yazı tipi.
-w300: Hafif yazı tipi.
-w400: Normal (normal) yazı tipi. Bu genellikle kullanılan varsayılan değerdir.
-w500: Orta kalınlıkta (medium) yazı tipi.
-w600: Kalın yazı tipi.
-w700: Çok kalın yazı tipi. bold buraya giriyor heralde
-w800: Ağır yazı tipi.
-w900: Çok ağır yazı tipi.
-                  */
-                ),
-                Text(
-                  "\$136 ",
-                  style: TextStyle(
-                      decoration: TextDecoration.lineThrough,
-                      fontWeight: FontWeight.w200,
-                      fontSize: 12,
-                      color: Colors.grey[400]),
-                ),
-                Text(
-                  "${widget.discount}% OFF",
-                  style: TextStyle(
-                    color: Colors.red,
-                  ),
-                ),
-              ],
-            ),
-          ],
+          ),
         ),
       ),
     );

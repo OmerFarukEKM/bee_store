@@ -5,12 +5,16 @@ import 'package:bee_store/pages/order.dart';
 import 'package:bee_store/pages/profile.dart';
 import 'package:firebase_core/firebase_core.dart'; // 4. videoda bunlar anlatıldı
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart'; // uygulama tamamen yüklenene kadar splash ekran kalsın istiyorsan bu olmalı
 
 Future<void> main() async {
   print("Hello World");
   islem(selamlamaMetini, sayi);
-  WidgetsFlutterBinding
-      .ensureInitialized(); // herşeyin düzgün olduğundan emin ol anlamına geliyor
+  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  // WidgetsFlutterBinding
+  //     .ensureInitialized();
+  //      // herşeyin düzgün olduğundan emin ol anlamına geliyor
   try {
     await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform);
@@ -18,6 +22,7 @@ Future<void> main() async {
   } catch (error) {
     print(error);
   }
+  FlutterNativeSplash.remove();
   runApp(MyApp());
 }
 
