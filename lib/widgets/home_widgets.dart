@@ -45,6 +45,8 @@ class _HomeWidgetsState extends State<HomeWidgets> {
                 imageAddress: widget.imageAddress,
                 usdPrice: widget.usdPrice,
               ),
+              fullscreenDialog:
+                  false, // defult olarak böyle geliyor zaten heralde
             ),
           );
         },

@@ -1,3 +1,4 @@
+import 'package:bee_store/widgets/app_drawer.dart';
 import 'package:bee_store/widgets/category_widgets.dart';
 import 'package:bee_store/widgets/home_widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -109,130 +110,128 @@ class _UserHomeState extends State<UserHome> {
   @override
   Widget build(BuildContext context) {
     // stateless ile statefull farkını bu ikisi ortaya çıkarıyor
-    return MaterialApp(
-      // theme: ThemeData(useMaterial3: true), // çözemedim ne olduunu tam olarak
-
-      debugShowCheckedModeBanner: isDebug,
-      home: Scaffold(
-        body: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Column(
-            children: [
-              const SizedBox(height: 12),
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: TextField(
-                  decoration: InputDecoration(
-                    labelText: "Search Anything...",
-                    prefixIcon: Image.asset("assets/search.png"),
-                    border: const OutlineInputBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(8),
-                      ),
-                      borderSide: BorderSide(
-                        color: Color(0xFF1F2937),
-                        width: 1,
-                      ),
+    return // burdan matariel app kaldırınca bu appbar ve bottom bar olayı düzeldi
+        // theme: ThemeData(useMaterial3: true), // çözemedim ne olduunu tam olarak
+        Scaffold(
+      body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Column(
+          children: [
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: TextField(
+                decoration: InputDecoration(
+                  labelText: "Search Anything...",
+                  prefixIcon: Image.asset("assets/search.png"),
+                  border: const OutlineInputBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(8),
+                    ),
+                    borderSide: BorderSide(
+                      color: Color(0xFF1F2937),
+                      width: 1,
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 8),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
+            ),
+            const SizedBox(height: 8),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Categories",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Color(0xFF1F2937),
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.07,
+                    ),
+                  ),
+                  Spacer(),
+                  Text(
+                    'View All ->',
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                      color: Color(0xFF6B7280),
+                      fontSize: 12,
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.w400,
+                      height: 0.12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      "Categories",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Color(0xFF1F2937),
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.07,
-                      ),
-                    ),
-                    Spacer(),
-                    Text(
-                      'View All ->',
-                      textAlign: TextAlign.right,
-                      style: TextStyle(
-                        color: Color(0xFF6B7280),
-                        fontSize: 12,
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w400,
-                        height: 0.12,
-                      ),
-                    ),
+                    for (int i = 0; i < 4; i++)
+                      FutureBuilder(
+                          future: FirebaseFirestore.instance
+                              .collection("categories")
+                              .get(),
+                          builder: (_, snapshot) {
+                            if (snapshot.hasData) {
+                              final categoryList = snapshot.data!.docs
+                                  .map((e) => e.data())
+                                  .toList();
+
+                              return Row(
+                                children: [
+                                  for (final data in categoryList)
+                                    // future builder olunca bi build fonksiyonu yazıyorsun bi future fonksiyonu yazıyorssun future fonksiyonunde bir eşyi bekletebiliyorsun duration 3 minute dedin mesele o şey 3 dk sonra gerçekleşecek
+                                    CategoryWidget(
+                                        imageAddress: data["imageUrl"],
+                                        caption: data["name"]),
+                                ],
+                              );
+                            } else {
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                          }),
                   ],
                 ),
+                //  child: Row(
+                //   children: [
+                //     for (int i = 0; i < 3; i++)
+                //       Row(
+                //         children: [
+                //           _buildCategoryButton("assets/dress.png", "Fashion"),
+                //           _buildCategoryButton(
+                //               "assets/electronic.png", "Electronic"),
+                //           _buildCategoryButton(
+                //               "assets/appliances.png", "Appliances"),
+                //           _buildCategoryButton("assets/beauty.png", "Beauty"),
+                //           _buildCategoryButton(
+                //               "assets/furniture_3.png", "Furniture"),
+                //         ],
+                //       ),
+                //   ],
+                // ),
               ),
-              const SizedBox(),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-
-                  child: Row(
-                    children: [
-                      for (int i = 0; i < 4; i++)
-                        FutureBuilder(
-                            future: FirebaseFirestore.instance
-                                .collection("categories")
-                                .get(),
-                            builder: (_, snapshot) {
-                              if (snapshot.hasData) {
-                                final categoryList = snapshot.data!.docs
-                                    .map((e) => e.data())
-                                    .toList();
-
-                                return Row(
-                                  children: [
-                                    for (final data in categoryList)
-                                      // future builder olunca bi build fonksiyonu yazıyorsun bi future fonksiyonu yazıyorssun future fonksiyonunde bir eşyi bekletebiliyorsun duration 3 minute dedin mesele o şey 3 dk sonra gerçekleşecek
-                                      CategoryWidget(
-                                          imageAddress: data["imageUrl"],
-                                          caption: data["name"]),
-                                  ],
-                                );
-                              } else {
-                                return Center(
-                                  child: CircularProgressIndicator(),
-                                );
-                              }
-                            }),
-                    ],
-                  ),
-                  //  child: Row(
-                  //   children: [
-                  //     for (int i = 0; i < 3; i++)
-                  //       Row(
-                  //         children: [
-                  //           _buildCategoryButton("assets/dress.png", "Fashion"),
-                  //           _buildCategoryButton(
-                  //               "assets/electronic.png", "Electronic"),
-                  //           _buildCategoryButton(
-                  //               "assets/appliances.png", "Appliances"),
-                  //           _buildCategoryButton("assets/beauty.png", "Beauty"),
-                  //           _buildCategoryButton(
-                  //               "assets/furniture_3.png", "Furniture"),
-                  //         ],
-                  //       ),
-                  //   ],
-                  // ),
-                ),
-              ),
-              const SizedBox(height: 12),
-              //Slider
-              Container(
-                width: double.infinity,
-                height: 200,
-                child: AspectRatio(
-                  aspectRatio: 16 / 9,
-                  child: PageView(
-                    controller: controller,
-                    children: <Widget>[
-                      /*
+            ),
+            const SizedBox(height: 12),
+            //Slider
+            Container(
+              width: double.infinity,
+              height: 200,
+              child: AspectRatio(
+                aspectRatio: 16 / 9,
+                child: PageView(
+                  controller: controller,
+                  children: <Widget>[
+                    /*
                       BoxFit.contain: Görüntüyü, container içine sığacak şekilde ölçeklendirir ve ortalar, oranını koruyarak.
                       BoxFit.cover: Görüntüyü, container'ın tamamını kaplayacak şekilde ölçeklendirir ve ortalar, oranını koruyarak.
                       BoxFit.fill: Görüntüyü, container'ın tamamını kaplayacak şekilde gerer ve oranını dikkate almaz.
@@ -240,88 +239,88 @@ class _UserHomeState extends State<UserHome> {
                       BoxFit.fitWidth: Görüntüyü, container'ın genişliğine sığacak şekilde ölçeklendirir ve oranını korur.
                       BoxFit.none: Herhangi bir ölçekleme uygulamaz.
                       */
-                      Center(
-                        child: Image.asset("assets/banner1.png",
-                            width: double.infinity, fit: BoxFit.fill),
-                      ),
-                      Center(
-                        child: Image.asset("assets/banner2.png",
-                            width: double.infinity, fit: BoxFit.fill),
-                      ),
-                      Center(
-                        child: Image.asset("assets/banner3.png",
-                            width: double.infinity, fit: BoxFit.fill),
-                      ),
-                      Center(
-                        child: Image.asset("assets/banner1.png",
-                            width: double.infinity, fit: BoxFit.fill),
-                      ),
-                      Center(
-                        child: Image.asset("assets/banner2.png",
-                            width: double.infinity, fit: BoxFit.fill),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Icon(
-                        Icons.circle,
-                        size: 6,
-                        color: dot1,
-                      ),
+                    Center(
+                      child: Image.asset("assets/banner1.png",
+                          width: double.infinity, fit: BoxFit.fill),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Icon(
-                        Icons.circle,
-                        size: 6,
-                        color: dot2,
-                      ),
+                    Center(
+                      child: Image.asset("assets/banner2.png",
+                          width: double.infinity, fit: BoxFit.fill),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Icon(
-                        Icons.circle,
-                        size: 6,
-                        color: dot3,
-                      ),
+                    Center(
+                      child: Image.asset("assets/banner3.png",
+                          width: double.infinity, fit: BoxFit.fill),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Icon(
-                        Icons.circle,
-                        size: 6,
-                        color: dot4,
-                      ),
+                    Center(
+                      child: Image.asset("assets/banner1.png",
+                          width: double.infinity, fit: BoxFit.fill),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Icon(
-                        Icons.circle,
-                        size: 6,
-                        color: dot5,
-                      ),
+                    Center(
+                      child: Image.asset("assets/banner2.png",
+                          width: double.infinity, fit: BoxFit.fill),
                     ),
                   ],
-                  mainAxisAlignment: MainAxisAlignment.center,
                 ),
               ),
-              const SizedBox(), // unutma ismiini
-              Container(
-                height: 650,
-                width: double.infinity,
-                color: Color.fromRGBO(246, 246, 246, 1),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    // tam olarak ne kadar gerekli olduğunu anlamadım ama bunu yazınca deal of yearı en başa aldı
-                    /*
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Icon(
+                      Icons.circle,
+                      size: 6,
+                      color: dot1,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Icon(
+                      Icons.circle,
+                      size: 6,
+                      color: dot2,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Icon(
+                      Icons.circle,
+                      size: 6,
+                      color: dot3,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Icon(
+                      Icons.circle,
+                      size: 6,
+                      color: dot4,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Icon(
+                      Icons.circle,
+                      size: 6,
+                      color: dot5,
+                    ),
+                  ),
+                ],
+                mainAxisAlignment: MainAxisAlignment.center,
+              ),
+            ),
+            const SizedBox(), // unutma ismiini
+            Container(
+              height: 650,
+              width: double.infinity,
+              color: Color.fromRGBO(246, 246, 246, 1),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  // tam olarak ne kadar gerekli olduğunu anlamadım ama bunu yazınca deal of yearı en başa aldı
+                  /*
                       Bu durumda, Column içinde Row var. Row da yatay bir düzen içinde widget'ları sıralar. İçindeki Text widget'ları ve Spacer'ın yardımıyla, "Deal of the Year" başlığını ve "View All ->" metnini yatayda sıralar.
 
                       İşte bazı özelliklerin anlamları:
@@ -333,141 +332,16 @@ class _UserHomeState extends State<UserHome> {
                       Column'un kullanılmasının nedeni, dikey sıralama yapmak ve içeriği düzenlemek içindir. Eğer sadece bir tek satır olsaydı, Column kullanmak gerekmezdi, ancak gelecekte içeriği genişletmek istenirse, Column eklemek daha esnek olabilir.
                     */
 
-                    children: [
-                      Row(
-                        mainAxisSize: MainAxisSize
-                            .min, // Adjusted to minimize vertical space
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              "Deal of the Year",
-                              style: TextStyle(
-                                color: Color.fromRGBO(31, 41, 55, 1),
-                                fontSize: 14,
-                                fontFamily: "Inter",
-                                fontWeight: FontWeight.w600,
-                                height: 0.11,
-                                letterSpacing: 0.07,
-                              ),
-                              textAlign: TextAlign.left,
-                            ),
-                          ),
-                          Spacer(),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'View All ->',
-                              textAlign: TextAlign.right,
-                              style: TextStyle(
-                                color: Color(0xFF6B7280),
-                                fontSize: 12,
-                                fontFamily: 'Inter',
-                                fontWeight: FontWeight.w400,
-                                height: 0.12,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Container(
-                              height: 35,
-                              width: 160,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5),
-                                color: Color.fromARGB(255, 239, 68, 68),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  "${_timeUntilTarget.inDays} D ${_timeUntilTarget.inHours % 24} H ${_timeUntilTarget.inMinutes % 60} M ${_timeUntilTarget.inSeconds % 60} S",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Color.fromARGB(255, 255, 255, 255),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                      Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Container(
-                              height: 525,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5),
-                                color: Colors
-                                    .white, // bu ikonların oraya kadar gelsin kalan yer krem olsun bi ara yap bunu
-                              ),
-                              child: SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        DealOfYearWidget(
-                                          imageAddress:
-                                              "assets/snacker_deal.png",
-                                          productTitle: "Running Shoes",
-                                          discount: 40,
-                                        ),
-                                        DealOfYearWidget(
-                                          discount: 60,
-                                          productTitle: "Wrist Watches",
-                                          imageAddress: "assets/watch.png",
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      children: [
-                                        DealOfYearWidget(
-                                          imageAddress:
-                                              "assets/snacker_deal.png",
-                                          productTitle: "Running Shoes",
-                                          discount: 40,
-                                        ),
-                                        DealOfYearWidget(
-                                          discount: 60,
-                                          productTitle: "Wrist Watches",
-                                          imageAddress: "assets/watch.png",
-                                        ),
-                                      ],
-                                    ),
-                                  ], // <-- Add a comma here
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 24,
-              ),
-              Container(
-                height: 880,
-                width: double.infinity,
-                child: Column(
                   children: [
                     Row(
+                      mainAxisSize: MainAxisSize
+                          .min, // Adjusted to minimize vertical space
                       children: [
                         Padding(
-                          padding: const EdgeInsets.all(16.0),
+                          padding: const EdgeInsets.all(8.0),
                           child: Text(
-                            "Hot selling footwear",
+                            "Deal of the Year",
                             style: TextStyle(
-                              // style bu abi type değil unutma
                               color: Color.fromRGBO(31, 41, 55, 1),
                               fontSize: 14,
                               fontFamily: "Inter",
@@ -475,13 +349,14 @@ class _UserHomeState extends State<UserHome> {
                               height: 0.11,
                               letterSpacing: 0.07,
                             ),
+                            textAlign: TextAlign.left,
                           ),
                         ),
                         Spacer(),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Text(
-                            "View all ->",
+                            'View All ->',
                             textAlign: TextAlign.right,
                             style: TextStyle(
                               color: Color(0xFF6B7280),
@@ -491,194 +366,221 @@ class _UserHomeState extends State<UserHome> {
                               height: 0.12,
                             ),
                           ),
-                        )
+                        ),
                       ],
-                    ),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        //   children: [ // burasını daha sonra kullanırsın doğru yapacağın zaman
-                        //   Column(
-                        //     children: [],
-                        //   )
-                        // ],
-
-                        children: [
-                          for (int i = 0; i < 8; i++)
-                            // ImageIcon(
-                            //   AssetImage(
-                            //       "assets/footwear.png"), //böyle bir kullanımı daha önce yapmamıştık
-                            //   size: 200,
-                            //   color: Colors.transparent,
-                            // ),
-                            Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0),
-                                child: HomeWidgets(
-                                  imageAddress: ("assets/abibas.png"),
-                                  titleSnackers:
-                                      "Adidas white snackers for man",
-                                  usdPrice: 66.5,
-                                  discount: 50,
-                                ))
-                        ],
-                      ),
                     ),
                     Row(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Text(
-                            "Recomended for you",
-                            style: TextStyle(
-                              color: Color.fromRGBO(31, 41, 55, 1),
-                              fontSize: 14,
-                              fontFamily: "Inter",
-                              fontWeight: FontWeight.w600,
-                              height: 0.11,
-                              letterSpacing: 0.07,
-                            ),
-                          ),
-                        ),
-                        Spacer(),
-                        Padding(
                           padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            "View all ->",
-                            textAlign: TextAlign.right,
-                            style: TextStyle(
-                              color: Color(0xFF6B7280),
-                              fontSize: 12,
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w400,
-                              height: 0.12,
+                          child: Container(
+                            height: 35,
+                            width: 160,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              color: Color.fromARGB(255, 239, 68, 68),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                "${_timeUntilTarget.inDays} D ${_timeUntilTarget.inHours % 24} H ${_timeUntilTarget.inMinutes % 60} M ${_timeUntilTarget.inSeconds % 60} S",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Color.fromARGB(255, 255, 255, 255),
+                                ),
+                              ),
                             ),
                           ),
                         )
                       ],
                     ),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        // şurda row açmayı nasıl unuttun :+
-
-                        children: [
-                          for (int i = 0; i < 8; i++) // :d
-                            Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0),
-                                child: HomeWidgets(
-                                    titleSnackers: "Nike kadın spor ayakkabı",
-                                    discount: 10,
-                                    imageAddress: "assets/nike.png",
-                                    usdPrice: 68))
-                        ],
-                      ),
-                    )
+                    Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Container(
+                            height: 525,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              color: Colors
+                                  .white, // bu ikonların oraya kadar gelsin kalan yer krem olsun bi ara yap bunu
+                            ),
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      DealOfYearWidget(
+                                        imageAddress: "assets/snacker_deal.png",
+                                        productTitle: "Running Shoes",
+                                        discount: 40,
+                                      ),
+                                      DealOfYearWidget(
+                                        discount: 60,
+                                        productTitle: "Wrist Watches",
+                                        imageAddress: "assets/watch.png",
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      DealOfYearWidget(
+                                        imageAddress: "assets/snacker_deal.png",
+                                        productTitle: "Running Shoes",
+                                        discount: 40,
+                                      ),
+                                      DealOfYearWidget(
+                                        discount: 60,
+                                        productTitle: "Wrist Watches",
+                                        imageAddress: "assets/watch.png",
+                                      ),
+                                    ],
+                                  ),
+                                ], // <-- Add a comma here
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
-            ],
-          ),
+            ),
+            const SizedBox(
+              height: 24,
+            ),
+            Container(
+              height: 880,
+              width: double.infinity,
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          "Hot selling footwear",
+                          style: TextStyle(
+                            // style bu abi type değil unutma
+                            color: Color.fromRGBO(31, 41, 55, 1),
+                            fontSize: 14,
+                            fontFamily: "Inter",
+                            fontWeight: FontWeight.w600,
+                            height: 0.11,
+                            letterSpacing: 0.07,
+                          ),
+                        ),
+                      ),
+                      Spacer(),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "View all ->",
+                          textAlign: TextAlign.right,
+                          style: TextStyle(
+                            color: Color(0xFF6B7280),
+                            fontSize: 12,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w400,
+                            height: 0.12,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      //   children: [ // burasını daha sonra kullanırsın doğru yapacağın zaman
+                      //   Column(
+                      //     children: [],
+                      //   )
+                      // ],
+
+                      children: [
+                        for (int i = 0; i < 8; i++)
+                          // ImageIcon(
+                          //   AssetImage(
+                          //       "assets/footwear.png"), //böyle bir kullanımı daha önce yapmamıştık
+                          //   size: 200,
+                          //   color: Colors.transparent,
+                          // ),
+                          Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16.0),
+                              child: HomeWidgets(
+                                imageAddress: ("assets/abibas.png"),
+                                titleSnackers: "Adidas white snackers for man",
+                                usdPrice: 66.5,
+                                discount: 50,
+                              ))
+                      ],
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          "Recomended for you",
+                          style: TextStyle(
+                            color: Color.fromRGBO(31, 41, 55, 1),
+                            fontSize: 14,
+                            fontFamily: "Inter",
+                            fontWeight: FontWeight.w600,
+                            height: 0.11,
+                            letterSpacing: 0.07,
+                          ),
+                        ),
+                      ),
+                      Spacer(),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "View all ->",
+                          textAlign: TextAlign.right,
+                          style: TextStyle(
+                            color: Color(0xFF6B7280),
+                            fontSize: 12,
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w400,
+                            height: 0.12,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      // şurda row açmayı nasıl unuttun :+
+
+                      children: [
+                        for (int i = 0; i < 8; i++) // :d
+                          Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16.0),
+                              child: HomeWidgets(
+                                  titleSnackers: "Nike kadın spor ayakkabı",
+                                  discount: 10,
+                                  imageAddress: "assets/nike.png",
+                                  usdPrice: 68))
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ],
         ),
-        drawer: const Drawer(),
       ),
+      drawer: AppDrawer(),
+      appBar: AppBar(
+          // Your app bar content goes here
+          ),
     );
   }
-
-  // Widget _buildCategoryButton(String imagePath, String label) {
-  //   return Row(
-  //     children: [
-  //       _buildSingleCategoryButton(imagePath, label),
-  //       const SizedBox(width: 8),
-  //     ],
-  //   );
-  // }
-
-  // Widget _buildSingleCategoryButton(String imagePath, String label) {
-  //   return Column(
-  //     children: [
-  //       IconButton(
-  //         icon: Image.asset(
-  //           imagePath,
-  //           width: 48,
-  //           height: 48,
-  //         ),
-  //         onPressed: () {},
-  //       ),
-  //       Padding(
-  //         padding: const EdgeInsets.all(8.0),
-  //         child: Text(
-  //           label,
-  //           textAlign: TextAlign.center,
-  //           style: TextStyle(
-  //             color: Color(0xFF1F2937),
-  //             fontSize: 12,
-  //             fontFamily: 'Inter',
-  //             fontWeight: FontWeight.w400,
-  //             height: 0.12,
-  //           ),
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
-
-  // Data types and variables
-  String selamlamaMetini = "Merhaba Arkadaşlar";
-  int sayi = 5;
-
-  // Timer for automatic banner change
-  late Timer bannerTimer;
-
-  // Target date for the countdown
-  late DateTime targetDate;
-
-  void islem(String metin, int sayi) {
-    for (int i = 0; i < sayi; i++) {
-      print(metin);
-    }
-  }
 }
-
-// Data types and variables
-String selamlamaMetini = "Merhaba Arkadaşlar";
-int sayi = 5;
-
-void islem(String metin, int sayi) {
-  for (int i = 0; i < sayi; i++) {
-    print(metin);
-  }
-}
-
-// class Insan {
-//   String isim;
-//   String soyisim;
-//   int yas;
-//   double kilo;
-//   bool askerlikYaptiMi;
-//   List<int> okullaGecenYillari;
-
-//   Insan(this.isim, this.soyisim, this.yas, this.kilo, this.askerlikYaptiMi,
-//       this.okullaGecenYillari) {
-//     print("İnsan sınıfı oluşturuldu");
-//   }
-// }
-
-// class Ogrenci extends Insan {
-//   String okulno;
-//   String okulismi;
-
-//   Ogrenci(
-//       String isim,
-//       String soyisim,
-//       int yas,
-//       double kilo,
-//       bool askerlikYaptiMi,
-//       List<int> okullaGecenYillari,
-//       this.okulismi,
-//       this.okulno)
-//       : super(isim, soyisim, yas, kilo, askerlikYaptiMi, okullaGecenYillari) {
-//     print("Ogrenci oluşturuldu");
-//   }
-// }

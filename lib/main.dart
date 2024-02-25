@@ -1,15 +1,17 @@
 import 'package:bee_store/firebase_options.dart';
 import 'package:bee_store/pages/categorys.dart';
 import 'package:bee_store/pages/home.dart';
+import 'package:bee_store/pages/loading_page.dart';
+import 'package:bee_store/pages/login_page.dart';
 import 'package:bee_store/pages/order.dart';
 import 'package:bee_store/pages/profile.dart';
+import 'package:bee_store/widgets/app_drawer.dart';
 import 'package:firebase_core/firebase_core.dart'; // 4. videoda bunlar anlatıldı
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart'; // uygulama tamamen yüklenene kadar splash ekran kalsın istiyorsan bu olmalı
 
 Future<void> main() async {
   print("Hello World");
-  islem(selamlamaMetini, sayi);
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   // WidgetsFlutterBinding
@@ -23,7 +25,8 @@ Future<void> main() async {
     print(error);
   }
   FlutterNativeSplash.remove();
-  runApp(MyApp());
+  runApp(LoadingPage());
+  //runApp(MyApp()); dı burası
 }
 
 class MyApp extends StatefulWidget {
@@ -91,7 +94,6 @@ class _MyAppState extends State<MyApp> {
             ),
           ],
         ),
-        drawer: const Drawer(),
         bottomNavigationBar: BottomNavigationBar(
           // backgroundColor: Colors.white,
           type: BottomNavigationBarType.fixed,
@@ -128,21 +130,5 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
     );
-  }
-
-  void islem(String metin, int sayi) {
-    for (int i = 0; i < sayi; i++) {
-      print(metin);
-    }
-  }
-}
-
-// Data types and variables
-String selamlamaMetini = "Merhaba Arkadaşlar";
-int sayi = 5;
-
-void islem(String metin, int sayi) {
-  for (int i = 0; i < sayi; i++) {
-    print(metin);
   }
 }
