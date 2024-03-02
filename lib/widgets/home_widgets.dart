@@ -1,19 +1,15 @@
+import 'package:bee_store/models/product_model.dart';
 import 'package:flutter/material.dart';
 import 'package:bee_store/pages/inspect_screen.dart';
 
 // flutter eğitim 3. video
 class HomeWidgets extends StatefulWidget {
-  const HomeWidgets(
-      {super.key,
-      required this.titleSnackers,
-      required this.discount,
-      required this.imageAddress,
-      required this.usdPrice});
+  const HomeWidgets({
+    super.key,
+    required this.product,
+  });
 
-  final String titleSnackers;
-  final String imageAddress;
-  final double usdPrice;
-  final double discount;
+  final ProductModel product;
   @override
   State createState() => _HomeWidgetsState();
 }
@@ -40,10 +36,10 @@ class _HomeWidgetsState extends State<HomeWidgets> {
             context,
             MaterialPageRoute(
               builder: (context) => InspectScreen(
-                heroTag:
-                    widget.titleSnackers, // Her resmin eşsiz bir etiketi olmalı
-                imageAddress: widget.imageAddress,
-                usdPrice: widget.usdPrice,
+                heroTag: widget.product
+                    .titleSnackers, // Her resmin eşsiz bir etiketi olmalı
+                imageAddress: widget.product.imageAddress,
+                usdPrice: widget.product.usdPrice,
               ),
               fullscreenDialog:
                   false, // defult olarak böyle geliyor zaten heralde
@@ -51,7 +47,7 @@ class _HomeWidgetsState extends State<HomeWidgets> {
           );
         },
         child: Hero(
-          tag: widget
+          tag: widget.product
               .titleSnackers, // burda resminin olsı daha mantıklı olmaz mı ?
           child: Container(
             width: 148,
@@ -74,8 +70,9 @@ class _HomeWidgetsState extends State<HomeWidgets> {
               children: [
                 Stack(
                   children: [
-                    Image.asset(
-                      widget.imageAddress,
+                    Image.network(
+                      // sorun burda dostum Image.asset değil Image.network debug konsoldan çözdüm sorunu aferin sana
+                      widget.product.imageAddress,
                       // width: double.infinity,
                       // fit: BoxFit.fill,
                     ),
@@ -99,11 +96,11 @@ class _HomeWidgetsState extends State<HomeWidgets> {
                     )
                   ],
                 ),
-                Text(widget.titleSnackers),
+                Text(widget.product.titleSnackers),
                 Row(
                   children: [
                     Text(
-                      "\$${widget.usdPrice}  ",
+                      "\$${widget.product.usdPrice}  ",
                       style: TextStyle(fontWeight: FontWeight.bold),
                       /*
               w100: Çok ince yazı tipi.
@@ -126,7 +123,7 @@ class _HomeWidgetsState extends State<HomeWidgets> {
                           color: Colors.grey[400]),
                     ),
                     Text(
-                      "${widget.discount}% OFF",
+                      "${widget.product.discount}% OFF",
                       style: TextStyle(
                         color: Colors.red,
                       ),

@@ -65,7 +65,7 @@ class _InspectScreenState extends State<InspectScreen> {
               child: Container(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height * 0.7,
-                child: Image.asset(
+                child: Image.network(
                   widget.imageAddress,
                   fit: BoxFit.cover,
                 ),

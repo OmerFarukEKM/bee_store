@@ -1,3 +1,4 @@
+import 'package:bee_store/models/product_model.dart';
 import 'package:bee_store/widgets/app_drawer.dart';
 import 'package:bee_store/widgets/category_widgets.dart';
 import 'package:bee_store/widgets/home_widgets.dart';
@@ -491,35 +492,48 @@ class _UserHomeState extends State<UserHome> {
                       )
                     ],
                   ),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      //   children: [ // burasını daha sonra kullanırsın doğru yapacağın zaman
-                      //   Column(
-                      //     children: [],
-                      //   )
-                      // ],
+                  FutureBuilder(
+                      // FutureBuilder<Object> böyle oludğundan hata veriyordu
+                      future: FirebaseFirestore.instance
+                          .collection("products")
+                          .get(),
+                      builder: (_, snapshot) {
+                        if (snapshot.hasData) {
+                          final products = snapshot.data!.docs.map((e) =>
+                              ProductModel.fromFirestore(e.data(), e.id));
+                          return SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              //   children: [ // burasını daha sonra kullanırsın doğru yapacağın zaman
+                              //   Column(
+                              //     children: [],
+                              //   )
+                              // ],
 
-                      children: [
-                        for (int i = 0; i < 8; i++)
-                          // ImageIcon(
-                          //   AssetImage(
-                          //       "assets/footwear.png"), //böyle bir kullanımı daha önce yapmamıştık
-                          //   size: 200,
-                          //   color: Colors.transparent,
-                          // ),
-                          Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16.0),
-                              child: HomeWidgets(
-                                imageAddress: ("assets/abibas.png"),
-                                titleSnackers: "Adidas white snackers for man",
-                                usdPrice: 66.5,
-                                discount: 50,
-                              ))
-                      ],
-                    ),
-                  ),
+                              children: [
+                                // for (int i = 0; i < 8; i++)
+                                for (final product in products)
+                                  // ImageIcon(
+                                  //   AssetImage(
+                                  //       "assets/footwear.png"), //böyle bir kullanımı daha önce yapmamıştık
+                                  //   size: 200,
+                                  //   color: Colors.transparent,
+                                  // ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16.0),
+                                    child: HomeWidgets(
+                                      product: product,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          );
+                        }
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }),
                   Row(
                     children: [
                       Padding(
@@ -556,20 +570,22 @@ class _UserHomeState extends State<UserHome> {
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
-                      // şurda row açmayı nasıl unuttun :+
+                        // şurda row açmayı nasıl unuttun :+
 
-                      children: [
-                        for (int i = 0; i < 8; i++) // :d
-                          Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16.0),
-                              child: HomeWidgets(
-                                  titleSnackers: "Nike kadın spor ayakkabı",
-                                  discount: 10,
-                                  imageAddress: "assets/nike.png",
-                                  usdPrice: 68))
-                      ],
-                    ),
+                        // children: [
+                        //   for (int i = 0; i < 8; i++) // :d
+                        //     Padding(
+                        //       padding:
+                        //           const EdgeInsets.symmetric(horizontal: 16.0),
+                        //       child: HomeWidgets(
+                        //         titleSnackers: "Nike kadın spor ayakkabı",
+                        //         discount: 10,
+                        //         imageAddress: "assets/nike.png",
+                        //         usdPrice: 68,
+                        //       ),
+                        //     ),
+                        // ],
+                        ),
                   )
                 ],
               ),

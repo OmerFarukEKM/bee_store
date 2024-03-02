@@ -94,6 +94,7 @@ class _MyAppState extends State<MyApp> {
             ),
           ],
         ),
+        drawer: const AppDrawer(),
         bottomNavigationBar: BottomNavigationBar(
           // backgroundColor: Colors.white,
           type: BottomNavigationBarType.fixed,

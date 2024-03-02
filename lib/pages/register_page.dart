@@ -105,7 +105,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       final userData = {
                         "name": _nameSurname,
                         "email": _email,
-                        // "password": _password // tehlikeli dendi
+                        //"password": _password, // tehlikeli dendi
                         "registerDate": FieldValue.serverTimestamp(),
                       };
                       if (uid == null) {
