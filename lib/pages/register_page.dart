@@ -15,6 +15,8 @@ class _RegisterPageState extends State<RegisterPage> {
   var _nameSurname = "";
   var _email = "";
   var _password = "";
+  var _cart = [];
+  // var _favorite =[];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,6 +109,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         "email": _email,
                         //"password": _password, // tehlikeli dendi
                         "registerDate": FieldValue.serverTimestamp(),
+                        "cart": _cart
                       };
                       if (uid == null) {
                         await FirebaseFirestore.instance

@@ -567,26 +567,34 @@ class _UserHomeState extends State<UserHome> {
                       )
                     ],
                   ),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                        // şurda row açmayı nasıl unuttun :+
-
-                        // children: [
-                        //   for (int i = 0; i < 8; i++) // :d
-                        //     Padding(
-                        //       padding:
-                        //           const EdgeInsets.symmetric(horizontal: 16.0),
-                        //       child: HomeWidgets(
-                        //         titleSnackers: "Nike kadın spor ayakkabı",
-                        //         discount: 10,
-                        //         imageAddress: "assets/nike.png",
-                        //         usdPrice: 68,
-                        //       ),
-                        //     ),
-                        // ],
-                        ),
-                  )
+                  FutureBuilder(
+                      future: FirebaseFirestore.instance
+                          .collection("products")
+                          .get(),
+                      builder: (_, snapshot) {
+                        if (snapshot.hasData) {
+                          final products = snapshot.data!.docs.map((e) =>
+                              ProductModel.fromFirestore(e.data(), e.id));
+                          return SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: [
+                                for (final product in products)
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16.0),
+                                    child: HomeWidgets(
+                                      product: product,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          );
+                        }
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }),
                 ],
               ),
             ),

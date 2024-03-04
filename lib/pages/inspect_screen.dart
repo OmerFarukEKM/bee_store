@@ -1,14 +1,22 @@
+import 'dart:js_interop';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:bee_store/models/product_model.dart';
 
 class InspectScreen extends StatefulWidget {
   final String heroTag;
   final String imageAddress;
   final double usdPrice;
+  final ProductModel product; // ProductModel'i tutacak alanı tanımlayın
 
   InspectScreen({
     required this.heroTag,
     required this.imageAddress,
     required this.usdPrice,
+    required this.product,
+    // Constructor'a bu parametreyi ekleyin
   });
 
   @override
@@ -17,9 +25,14 @@ class InspectScreen extends StatefulWidget {
 
 class _InspectScreenState extends State<InspectScreen> {
   bool isFavorite = false;
+  bool inCart = false;
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser!;
+    final cartDoc =
+        FirebaseFirestore.instance.collection("users").doc(user.uid);
+    //
     return Scaffold(
       extendBodyBehindAppBar:
           true, // App bar'ın vücut arkasında uzanmasını sağlar
@@ -28,13 +41,65 @@ class _InspectScreenState extends State<InspectScreen> {
         elevation: 0,
         title: Text('Inspect Screen'),
         actions: [
+          StreamBuilder(
+              stream: cartDoc.snapshots(),
+              builder: (_, snapshot) {
+                if (snapshot.hasData) {
+                  // Firestore belgesinin varlığını kontrol et
+                  if (snapshot.data!.exists) {
+                    // Belge var, "cart" alanını kontrol et
+                    final cartExists =
+                        (snapshot.data! as dynamic).data()?["cart"] !=
+                            null; // null değilse demiş burda dikkat et
+
+                    if (!cartExists) {
+                      // "cart" alanı yoksa, oluştur
+                      cartDoc.set({"cart": []}, SetOptions(merge: true));
+                    }
+                  }
+                  final cartArray = (snapshot.data! as dynamic)["cart"] ?? [];
+                  bool inCart = cartArray.contains(widget.product.uid);
+
+                  return IconButton(
+                    onPressed: () async {
+                      // Kullanıcının sepet verilerini al
+
+                      if (!(await cartDoc.get()).exists) {
+                        cartDoc.set({"cart": []}, SetOptions(merge: true));
+                      }
+
+                      // Ürünün sepet içinde olup olmadığını kontrol et
+                      if (cartArray.contains(widget.product.uid)) {
+                        // Eğer varsa, sepetten çıkar
+                        cartDoc.update({
+                          "cart": FieldValue.arrayRemove([widget.product.uid])
+                        });
+                      } else {
+                        // Eğer yoksa, sepete ekle
+                        cartDoc.update({
+                          "cart": FieldValue.arrayUnion([widget.product.uid])
+                        });
+                      }
+
+                      // setState kullanımı güncellendi
+                      setState(() {
+                        inCart = !inCart;
+                      });
+                    },
+                    icon: Icon(
+                      inCart ? Icons.shopping_bag : Icons.shopping_bag_outlined,
+                      color: Color.fromARGB(255, 30, 18, 124),
+                      size: 24,
+                    ),
+                  );
+                }
+                return Center(child: CircularProgressIndicator());
+              }),
           IconButton(
             onPressed: () {
               setState(() {
-                // Kalp ikonuna tıklanınca durumu tersine çevir
                 isFavorite = !isFavorite;
               });
-              // İşlemlerinizi buraya ekleyin
             },
             icon: Icon(
               isFavorite ? Icons.favorite : Icons.favorite_border,
@@ -142,11 +207,11 @@ class _InspectScreenState extends State<InspectScreen> {
                     child: Row(
                       children: [
                         Text(
-                          "\$35 ",
+                          "\$126 ",
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          "\$136 ",
+                          "\$140 ",
                           style: TextStyle(
                               decoration: TextDecoration.lineThrough,
                               fontWeight: FontWeight.w200,
@@ -154,7 +219,7 @@ class _InspectScreenState extends State<InspectScreen> {
                               color: Colors.grey[400]),
                         ),
                         Text(
-                          "15% OFF",
+                          "10% OFF",
                           style: TextStyle(
                             color: Colors.red,
                           ),

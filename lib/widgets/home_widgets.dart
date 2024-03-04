@@ -1,6 +1,8 @@
 import 'package:bee_store/models/product_model.dart';
 import 'package:flutter/material.dart';
 import 'package:bee_store/pages/inspect_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 // flutter eğitim 3. video
 class HomeWidgets extends StatefulWidget {
@@ -36,10 +38,13 @@ class _HomeWidgetsState extends State<HomeWidgets> {
             context,
             MaterialPageRoute(
               builder: (context) => InspectScreen(
-                heroTag: widget.product
-                    .titleSnackers, // Her resmin eşsiz bir etiketi olmalı
+                heroTag:
+                widget.product.uid, // Her resmin eşsiz bir etiketi olmalı
                 imageAddress: widget.product.imageAddress,
                 usdPrice: widget.product.usdPrice,
+                product:
+                    widget.product,
+                 // ProductModel'i InspectScreen'e iletin
               ),
               fullscreenDialog:
                   false, // defult olarak böyle geliyor zaten heralde
@@ -47,8 +52,8 @@ class _HomeWidgetsState extends State<HomeWidgets> {
           );
         },
         child: Hero(
-          tag: widget.product
-              .titleSnackers, // burda resminin olsı daha mantıklı olmaz mı ?
+          tag: widget
+              .product.uid, // burda resminin olsı daha mantıklı olmaz mı ?
           child: Container(
             width: 148,
             height: 165,
@@ -82,6 +87,14 @@ class _HomeWidgetsState extends State<HomeWidgets> {
                       top: 0,
                       child: IconButton(
                         onPressed: () {
+                          // final user = FirebaseAuth.instance.currentUser!;
+                          // FirebaseFirestore.instance
+                          //     .collection("users")
+                          //     .doc(user.uid)
+                          //     .update({
+                          //   "cart": FieldValue.arrayUnion([widget.product.uid])
+                          // });
+
                           setState(() {
                             isFavorite = !isFavorite;
                           });
@@ -93,14 +106,34 @@ class _HomeWidgetsState extends State<HomeWidgets> {
                           color: isFavorite ? Colors.red : null,
                         ),
                       ),
-                    )
+                    ),
+                    // Positioned(
+                    //   // Positioned.fill(
+                    //   right: 20,
+                    //   top: 0,
+                    //   child: IconButton(
+                    //     onPressed: () {
+                    //       setState(() {
+                    //         isFavorite = !isFavorite;
+                    //       });
+                    //     },
+                    //     icon: Icon(
+                    //       isFavorite // çok ilginçmiş öğren burayı
+                    //           ? Icons.shopping_bag
+                    //           : Icons.shopping_bag_outlined,
+                    //       color: isFavorite
+                    //           ? Color.fromARGB(255, 0, 13, 255)
+                    //           : null,
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
                 Text(widget.product.titleSnackers),
                 Row(
                   children: [
                     Text(
-                      "\$${widget.product.usdPrice}  ",
+                      "\$${widget.product.usdPrice - (widget.product.usdPrice * widget.product.discount / 100).toInt()}  ",
                       style: TextStyle(fontWeight: FontWeight.bold),
                       /*
               w100: Çok ince yazı tipi.
@@ -115,7 +148,7 @@ class _HomeWidgetsState extends State<HomeWidgets> {
                     */
                     ),
                     Text(
-                      "\$136 ",
+                      "\$${widget.product.usdPrice}  ",
                       style: TextStyle(
                           decoration: TextDecoration.lineThrough,
                           fontWeight: FontWeight.w200,
