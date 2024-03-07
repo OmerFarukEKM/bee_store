@@ -126,7 +126,7 @@ class _InspectScreenState extends State<InspectScreen> {
         child: Column(
           children: [
             Hero(
-              tag: widget.heroTag,
+              tag: widget.product.uid,
               child: Container(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height * 0.7,
